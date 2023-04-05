@@ -1,4 +1,4 @@
-# Schedule
+# Agenda
 Este es una aplicación escrita en C++, con fácil traducción a C. Se trata de una agenda electrónica.
 
 ## Documentación
@@ -70,11 +70,13 @@ Se aprendió como manipular estructuras de diferentes formas, así para darle un
 * Agregar efectos visuales (aplicando ciclos, para cuestiones de carga).
 * Almacenar un respaldo de la información en ficheros para que sea más persistente o sobre un sistema gestor de base de datos.
 * Utilizar ventanas modales.
-* Adaptarle interfaz gráfica. 
+* Adaptarle interfaz gráfica.
+* Agregar reportes segun la necesidad
 
 ### Conclusion
 En el desarrollo de esta agenda electrónica, se ha destacado el uso de estructuras, por encima de los arreglos unidimensionales y multidimensionales normales de enteros, flotantes y cadenas, orientándose así directamente a estructuras. Se ha logrado con creces, la inventiva de la aplicación para la interacción con el usuario final, tomando en cuenta que se ha creado todos los eventos necesarios para tener una agenda electrónica completa en cuanto a funcionalidad.
 
 Los eventos de contactos se han creado y se han puesto en marcha exitosamente, correspondiendo a cada punto orientado en la guía para la elaboración de este proyecto, dejando sin lugar a duda, todos los puntos en discusión, resueltos.
 
-La aplicación está accesible, todas las instrucciones de relevancia totalmente comentadas.# Agenda
+La aplicación está accesible, todas las instrucciones de relevancia totalmente comentadas.
+# Agenda
