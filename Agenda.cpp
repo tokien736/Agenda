@@ -5,8 +5,8 @@
 #include <string.h>					/*Funciones de manejo de cadenas*/
 #include <windows.h>				/*Permite usar comandos de Windows Console*/
 #include <stdio.h>
-
-#define CANTIDAD 500 				/*Cantidad mï¿½xima de contactos: 500*/
+#include <locale.h>
+#define CANTIDAD 500 				/*Cantidad maxima de contactos: 500*/
 
 using namespace std;
 
@@ -18,7 +18,8 @@ using namespace std;
 */
 int ContactosRegistrados = 0;
 int ContactosEliminados  = 0;
-string Regla = "=============================================================";
+const int ANCHO_CONSOLA = 65;
+string Regla = string(ANCHO_CONSOLA, '-');
 
 /*****************************
 Estructura de fecha y Agenda
@@ -35,7 +36,7 @@ struct Agenda {
 	string Celular;
 	string Email;
 	Cumple Fecha;					/*Referencia a la estructura Cumple*/
-	Agenda();  						/*Declaraci?n del constructor*/
+	Agenda();  						/*Declaración del constructor*/
 };
 
 /*****************************
@@ -50,11 +51,11 @@ void Insertar(struct Agenda Contactos[]);			/*Inserta contactos en la agenda*/
 
 /*Relevante e importante*/
 void Buscar(struct Agenda Contactos[]);				/*Busca contactos en la agenda*/
-int BuscarMenuCategoria();							/*Se muestra un menï¿½ para buscar por categorï¿½as*/
-void BuscarPorNombre(struct Agenda Contactos[]);	/*Aplica una bï¿½squeda por nombre de contacto*/
-void BuscarPorTelefono(struct Agenda Contactos[]);	/*Aplica una bï¿½squeda por telï¿½fono de contacto*/
-void BuscarPorCelular(struct Agenda Contactos[]);	/*Aplica una bï¿½squeda por celular de contacto*/
-void BuscarPorEmail(struct Agenda Contactos[]);		/*Aplica una bï¿½squeda por email de contacto*/
+int BuscarMenuCategoria();							/*Se muestra un mensaje para buscar por categorias*/
+void BuscarPorNombre(struct Agenda Contactos[]);	/*Aplica una busqueda por nombre de contacto*/
+void BuscarPorTelefono(struct Agenda Contactos[]);	/*Aplica una busqueda por telefono de contacto*/
+void BuscarPorCelular(struct Agenda Contactos[]);	/*Aplica una busqueda por celular de contacto*/
+void BuscarPorEmail(struct Agenda Contactos[]);		/*Aplica una busqueda por email de contacto*/
 
 /*Relevante e importante*/
 void Listar(struct Agenda Contactos[]);				/*Lista todos los contactos existentes*/
@@ -68,9 +69,9 @@ void Eliminar(struct Agenda Contactos[], int);		/*Elimina un contacto selecciona
 int VerificarContacto(struct Agenda Contactos[], string);	/*Verifica si el contacto especificado existe*/
 
 /*
-Esta funci?n es interesante, tiene como objetivo
+Esta función es interesante, tiene como objetivo
 cargar datos (contactos) en la agenda para pruebas
-r?pidas en la ejcuci?n del programa.
+r?pidas en la ejcución del programa.
 */
 void CargarContactos(struct Agenda Contactos[]);
 bool HayContactos(struct Agenda Contactos[]);		/*Verifica si hay contactos en la agenda*/
@@ -84,27 +85,32 @@ void Dormir(int);									/*Aplica un retraso temporal*/
 int Salir();										/*Centinela que pregunta por la salida de los Menï¿½es*/
 
 /*****************************
- DEFINICI?N DEL CONSTRUCTOR
+ DEFINICIÓN DEL CONSTRUCTOR
 -----------------------------
 Inicializando la estructura.
 *****************************/
 Agenda::Agenda() {
 	Nombre 		= " ";								/*Para nombre, dejar un espacio en blanco*/
-	Telefono 	= "0";								/*Para tel?fono, dejar 0 como contenido*/
+	Telefono 	= "0";								/*Para telefono, dejar 0 como contenido*/
 	Celular 	= "0";								/*Para celular, dejar 0 como contenido*/
 	Email 		= " ";								/*Para email, dejar un espacio en blanco*/
 	Fecha.Nacimiento = " ";							/*Para fecha, dejar un espacio en blanco*/
 }
 
 /*****************************
-	  FUNCIÃ“N PRINCIPAL
+	  FUNCION PRINCIPAL
 *****************************/
 int main(int argc, char *argv[]) {
+	
+	//Tamaño de la consola
+	system("mode con: cols=80 lines=30");
+
 	setlocale(LC_CTYPE, "spanish");
 	int x;											/*Almacena las opciones seleccionadas*/
 	int salir = 0;                                  /*bandera para salir*/
-	Agenda Contactos[CANTIDAD]; 					/*Definici?n de la variable Contactos con la cantidad*/
-	CargarContactos(Contactos);						/*Menï¿½ para cargar datos o iniciar una nueva agenda*/
+	Agenda Contactos[CANTIDAD]; 					/*Definición de la variable Contactos con la cantidad*/
+	CargarContactos(Contactos);						/*menasaje para cargar datos o iniciar una nueva agenda*/
+	
 	
 	do{											/*Etiqueta para retornar al Menu recursivamente*/
 		if (HayContactos(Contactos)){				/*Verifica si no hay contactos*/
@@ -112,10 +118,10 @@ int main(int argc, char *argv[]) {
 			ContactosEliminados  = 0;
 			/*No hay contactos*/
 			do {
-				x = MenuPrimario();					/*Primer Menï¿½ donde la agenda est? vac?a*/
+				x = MenuPrimario();					/*Primer Menu donde la agenda est? vac?a*/
 			} while(x < 1 || x > 2);
 			
-			switch (x){								/*En este Menï¿½ se validan 2 opciones (Insertar, Salir)*/
+			switch (x){								/*En este Menu se validan 2 opciones (Insertar, Salir)*/
 				case 1: 
 					Insertar(Contactos);			/*Menï¿½ para insertar datos*/
 					break;
@@ -163,20 +169,42 @@ int MenuPrimario(){
 	char x;										/*Sirve para almacenar la respuesta (opci?n)*/
 	
 	LimpiarPantalla();
+	// Obtener el ancho de la consola
+
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    int consoleWidth = csbi.dwSize.X;
+    	
+    // titulo a centrar
+    string titulo = "\x1B[1mBienvenido a tu Agenda Electrónica (Contactos)\x1B[0m";
+    string subtitulo = "\x1B[1mNo hay contactos\x1B[0m";
+    
+	// Calcular el número de espacios en blanco necesarios para centrar la palabra
+	int espaciosEnBlancoTitulo = (consoleWidth - titulo.length()) / 2;
+	int espaciosEnBlancoSubtitulo = (consoleWidth - subtitulo.length()) / 2;
+	cout << Regla << endl;		
+	
+	// Imprimir los espacios en blanco seguidos de la palabra centrada
+	for (int i = 0; i < espaciosEnBlancoTitulo; i++) {
+	        cout << " ";
+	}
+	cout << titulo << endl;
+	cout << Regla << endl;
+	cout << "\n";
+	
+	// Imprimir los espacios en blanco seguidos de la palabra centrada
+	for (int i = 0; i < espaciosEnBlancoSubtitulo; i++) {
+	        cout << " ";
+	}
+	
+	cout << subtitulo<< endl;
+	cout << "\n";
 	
 	cout << Regla << endl;
-	cout << "|\tBienvenido a tu Agenda Electr?nica (Contactos)\t    |" << endl;
+	cout << "\x1B[1m\t\t1.Nuevo contacto\x1B[0m\n\n\x1B[1m\t\t2.Salir\x1B[0m" << endl;
 	cout << Regla << endl;
 	
-	cout << "|\t\t\t\t\t\t\t    |" << endl;
-	cout << "|\t\t       No hay contactos\t\t\t    |" << endl;
-	cout << "|\t\t\t\t\t\t\t    |" << endl;
-	
-	cout << Regla << endl;
-	cout << "| (1) Nuevo contacto           |        (2) Salir           |" << endl;
-	cout << Regla << endl;
-	
-	cout << "Esperando respuesta: ";
+	cout << "\x1B[1m\t Esperando respuesta: \x1B[0m";
 	cin >> x;
 	
 	return x;									/*Convierte y retorna la opci?n seleccionada*/
@@ -187,20 +215,46 @@ int MenuSecundario(){
 	
 	LimpiarPantalla();
 	
+	// Obtener el ancho de la consola
+
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+	int consoleWidth = csbi.dwSize.X;
+    	
+    // titulo a centrar
+    string titulo = "\x1B[1mBienvenido a tu Agenda Electronica (Contactos)\x1B[0m";
+    string subtitulo = "\x1B[1mSi hay contactos\x1B[0m";
+	// Calcular el número de espacios en blanco necesarios para centrar la palabra
+	int espaciosEnBlanco = (consoleWidth - titulo.length()) / 2;
+	int espaciosEnBlancoSubtitulo = (consoleWidth - subtitulo.length()) / 2;	
 	cout << Regla << endl;
-	cout << "|\tBienvenido a tu Agenda Electr?nica (Contactos)\t    |" << endl;
+		
+	// Imprimir los espacios en blanco seguidos de la palabra centrada
+	for (int i = 0; i < espaciosEnBlanco; i++) {
+	    cout << " ";
+    }
+	cout << titulo << endl;
 	cout << Regla << endl;
 	
-	cout << "|\t\t\t\t\t\t\t    |" << endl;
-	cout << "|\t\t      S? hay contactos" << " (" << (ContactosRegistrados - ContactosEliminados) << ")\t\t    |" << endl;
-	cout << "|\t\t\t\t\t\t\t    |" << endl;
+	cout << "\n";
+	
+		
+	// Imprimir los espacios en blanco seguidos de la palabra centrada
+	for (int i = 0; i < espaciosEnBlancoSubtitulo; i++) {
+	        cout << " ";
+	}
+	
+	cout << subtitulo << " (" << (ContactosRegistrados - ContactosEliminados)<<")"<< endl;
+	cout << "\n";
 		
 	cout << Regla << endl;
-	cout << "| (1) Nuevo   | (2) Buscar   |  (3) Listar   |  (4) Salir   |" << endl;
+	
+	cout << "\x1B[1m\t1. Nuevo \x1B[0m\n\t\x1B[1m2. Buscar\x1B[0m\n\t\x1B[1m3. Listar \x1B[0m\n\t\x1B[1m4. Salir\x1B[0m" << endl;
 	cout << Regla << endl;
 	
-	cout << "Esperando respuesta: ";
+	cout << "\x1B[1m\tEsperando respuesta: \x1B[0m";
 	cin >> x;
+	
 	return x;
 }
 
@@ -212,8 +266,8 @@ void Insertar(struct Agenda Contactos[]){
 		
 		/*Se verifica si hay espacio en la agenda*/
 		if (ContactosRegistrados < CANTIDAD){
-			cout << "\n\tN?mero de contacto: " << (ContactosRegistrados + 1) << endl;
-			cout << "\tNombre:   ";
+			cout << "\x1B[1m\n\tNumero de contacto: \x1B[0m" << (ContactosRegistrados + 1) << endl;
+			cout << "\x1B[1m\tNombre:   \x1B[0m";
 			cin >>  Contactos[ContactosRegistrados].Nombre;
 			
 			/*Se verifica si el contacto que est? intentando insertar, existe en la agenda*/
@@ -224,8 +278,9 @@ void Insertar(struct Agenda Contactos[]){
 				
 				/*Si existe se intenta ingresar otro*/
 				do {
-					cout << "\n\t?Desea agregar otro contacto?" << endl;
-					cout << "\t(1) S?, (2) No: ";
+					cout << "\n\t\x1B[1m¿Desea agregar otro contacto?\x1B[0m" << endl;
+					cout << "\t\x1B[1m1. Si\x1B[0m\n\t\x1B[1m2. No\x1B[0m";
+					cout << "\x1B[1m\n\tEsperando respuesta: \x1B[0m";
 					cin >> x;
 					
 				} while(x < 1 || x > 2);
@@ -233,9 +288,13 @@ void Insertar(struct Agenda Contactos[]){
 				switch (x){
 					case 1: 
 						// volvemos a InsertarMenu
+						cout<<"\n"<<endl;
+						Insertar(Contactos);
 						break;
 					case 2:
+						salir = 1;
 						Detenerse();
+						MenuSecundario();
 						break;
 					default:
 						cout << "Up's, ha ocurrido algo inesperado, presione una tecla para continuar!." << endl;
@@ -244,26 +303,27 @@ void Insertar(struct Agenda Contactos[]){
 				}
 			}
 			
-			cout << "\tTel?fono: ";									
+			cout << "\x1B[1m\tTelefono: \x1B[0m";									
 			cin >>  Contactos[ContactosRegistrados].Telefono;	/*Agregando valor a atributo Telefono*/
 			
-			cout << "\tCelular:  ";
+			cout << "\x1B[1m\tCelular:  \x1B[0m";
 			cin >>  Contactos[ContactosRegistrados].Celular;	/*Agregando valor a atributo Celular*/
 			
-			cout << "\tEmail:    ";
+			cout << "\x1B[1m\tEmail:    \x1B[0m";
 			cin >>  Contactos[ContactosRegistrados].Email;	/*Agregando valor a atributo Email*/
 			
-			cout << "\tFecha de Nacimiento (DD/MM/AAAA): ";
+			cout << "\x1B[1m\tFecha de Nacimiento (DD/MM/AAAA): \x1B[0m";
 			cin >>  Contactos[ContactosRegistrados].Fecha.Nacimiento;	/*Agregando valor a atributo de Fecha*/
 			
 			ContactosRegistrados++;									/*Se incrementa la variable, indicando nuevo contacto*/
 			
-			cout << "\n\t?Agregado con ?xito!" << endl << endl;
+			cout << "\x1B[1m\n\t¡Agregado con exito!\x1B[0m" << endl << endl;
 			
 		
 			do {
-				cout << "\n\t?Desea agregar otro contacto?" << endl;
-				cout << "\t(1) S?, (2) No: ";
+				cout << "\n\t\x1B[1m¿Desea agregar otro contacto?\x1B[0m" << endl;
+				cout << "\t\x1B[1m1. Si\x1B[0m\n\t\x1B[1m2. No\x1B[0m";
+				cout << "\x1B[1m\n\tEsperando respuesta: \x1B[0m";
 				cin >> x;
 				
 			} while(x < 1 || x > 2);
@@ -273,6 +333,7 @@ void Insertar(struct Agenda Contactos[]){
 					// volvemos a InsertarMenu
 					break;
 				case 2:
+					salir = 1;
 					Detenerse();
 					break;
 				default:
@@ -282,12 +343,10 @@ void Insertar(struct Agenda Contactos[]){
 			}
 			
 		} else {
-			cout << "Lleg? al l?mite de contactos permitidos en la agenda." << endl << endl;
+			cout << "Llego al limite de contactos permitidos en la agenda." << endl << endl;
 		}
 	}
 	while(salir == 0);
-
-	Detenerse();
 	return;
 }
 
@@ -639,15 +698,33 @@ void CargarContactos(struct Agenda Contactos[]){
 	*/
 	do {
 		LimpiarPantalla();
-			
+		
+	    // Obtener el ancho de la consola
+
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+	    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    	int consoleWidth = csbi.dwSize.X;
+    	
+    	// titulo a centrar
+    	string titulo = "\x1B[1mBienvenido a tu Agenda Electronica (Contactos)\x1B[0m";
+    
+		// Calcular el número de espacios en blanco necesarios para centrar la palabra
+		int espaciosEnBlanco = (consoleWidth - titulo.length()) / 2;
+		
 		cout << Regla << endl;
-		cout << "|\tBienvenido a tu Agenda Electr?nica (Contactos)\t    |" << endl;
+		
+		// Imprimir los espacios en blanco seguidos de la palabra centrada
+	    for (int i = 0; i < espaciosEnBlanco; i++) {
+	        cout << " ";
+	    }
+				
+		cout <<titulo<< endl;
 		cout << Regla << endl;
 			
-		cout << "(1) Cargar contactos previos | (2) Nueva agenda | (3) Salir |" << endl;
+		cout << "\t\x1B[1m 1.Cargar contactos previos\x1B[0m \n\t \x1B[1m2.Nueva agenda\x1B[0m\n\t\x1B[1m 3.Salir\x1B[0m" << endl;
 		cout << Regla << endl;
 			
-		cout << "Esperando respuesta: ";
+		cout << "\x1B[1m\t Esperando respuesta: \x1B[0m";
 		cin >> x;
 		
 			
@@ -730,14 +807,37 @@ void Dormir(int x){
 }
 
 int Salir(){
+	LimpiarPantalla();
+	
 	int x;
 	
+	// Obtener el ancho de la consola
+
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    int consoleWidth = csbi.dwSize.X;
+    	
+    // titulo a centrar
+    string titulo = "\x1B[1m¿Está seguro(a) de querer hacerlo?\x1B[0m";
+    
+	// Calcular el número de espacios en blanco necesarios para centrar la palabra
+	int espaciosEnBlanco = (consoleWidth - titulo.length()) / 2;
+		
+		
+			
 	/*Centinela general*/
 	do {
-		cout << "\n\t¿Está seguro(a) de querer hacerlo?" << endl;
-		cout << "\t(1) Sí, (2) No: ";
-		cin >> x;
+		cout << Regla << endl;
 		
+		// Imprimir los espacios en blanco seguidos de la palabra centrada
+	    for (int i = 0; i < espaciosEnBlanco; i++) {
+	        cout << " ";
+	    }		
+		cout << titulo<< endl;
+		cout << "\x1B[1m\t1. Sí\x1B[0m\n\x1B[1m\t2. No \x1B[0m\n";
+		cout << Regla << endl;
+		cout << "\x1B[1m\tEsperando respuesta: \x1B[0m";
+		cin >> x;
 	} while(x < 1 || x > 2);
 	
 	cout << endl;
