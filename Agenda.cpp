@@ -8,6 +8,10 @@
 #include <algorithm>
 #include <locale.h>
 #define CANTIDAD 500 				/*Cantidad maxima de contactos: 500*/
+<<<<<<< HEAD
+=======
+#include <fstream>
+>>>>>>> persistencia
 
 using namespace std;
 
@@ -163,6 +167,20 @@ int main(int argc, char *argv[]) {
 	}
 	while (salir == 0);						/*Se retorna al Menï¿½ principal en caso de que no haya seleccionado Salir*/
 	
+	ofstream Archivo("Contactos.txt");
+	for (int i= 0 ; i<ContactosRegistrados;i++) {
+		
+		Archivo<<"Contactos  "<<i+1<<":"<<endl;
+		Archivo<<"Nombre: "<<Contactos[i].Nombre<<endl;
+		Archivo<<"Teléfono: "<<Contactos[i].Telefono<<endl;
+		Archivo<<"Celular: "<<Contactos[i].Celular<<endl;
+		Archivo<<"Email: "<<Contactos[i].Email<<endl;
+		Archivo<<"Fecha de Nacimiento:  "<<Contactos[i].Fecha.Nacimiento<<endl;
+		
+		Archivo<<endl;
+	}
+	Archivo.close();
+	cout<<"Datos de contacto exportado correctamente al archivo Contacto.txt"<<endl;	
 	return 0;
 }
 
