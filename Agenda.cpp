@@ -4,12 +4,12 @@
 #include <iostream>					/*Flujo de entrada y salida de datos*/
 #include <string.h>					/*Funciones de manejo de cadenas*/
 #include <windows.h>				/*Permite usar comandos de Windows Console*/
-#include <stdio.h>
-#include <algorithm>
-#include <locale.h>
+#include <stdio.h>					/*se utiliza para proporcionar las funciones para la entrada y salida de archivos.*/
+#include <algorithm>				/*se utiliza para proporcionar varias funciones de algoritmos para trabajar con contenedores.*/
+#include <locale.h>					/* se utiliza para establecer la configuración regional y de idioma para el programa*/
 #define CANTIDAD 500 				/*Cantidad maxima de contactos: 500*/
-#include <limits>
-#include <fstream>
+#include <limits>					/* proporciona funciones para obtener las limitaciones y características del tipo de datos básicos de C++.*/
+#include <fstream>					/*se utiliza para proporcionar las funciones para la entrada y salida de archivos.*/
 
 using namespace std;
 
