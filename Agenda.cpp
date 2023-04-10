@@ -8,10 +8,8 @@
 #include <algorithm>
 #include <locale.h>
 #define CANTIDAD 500 				/*Cantidad maxima de contactos: 500*/
-<<<<<<< HEAD
-=======
+#include <limits>
 #include <fstream>
->>>>>>> persistencia
 
 using namespace std;
 
@@ -184,50 +182,59 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-int MenuPrimario(){
-	char x;										/*Sirve para almacenar la respuesta (opci?n)*/
-	
-	LimpiarPantalla();
-	// Obtener el ancho de la consola
+int MenuPrimario() {
+    char input;
+    int option;
 
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    LimpiarPantalla();
+    // Obtener el ancho de la consola
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     int consoleWidth = csbi.dwSize.X;
-    	
+
     // titulo a centrar
     string titulo = "\x1B[1mBienvenido a tu Agenda Electrónica (Contactos)\x1B[0m";
     string subtitulo = "\x1B[1mNo hay contactos\x1B[0m";
-    
-	// Calcular el número de espacios en blanco necesarios para centrar la palabra
-	int espaciosEnBlancoTitulo = (consoleWidth - titulo.length()) / 2;
-	int espaciosEnBlancoSubtitulo = (consoleWidth - subtitulo.length()) / 2;
-	cout << Regla << endl;		
-	
-	// Imprimir los espacios en blanco seguidos de la palabra centrada
-	for (int i = 0; i < espaciosEnBlancoTitulo; i++) {
-	        cout << " ";
-	}
-	cout << titulo << endl;
-	cout << Regla << endl;
-	cout << "\n";
-	
-	// Imprimir los espacios en blanco seguidos de la palabra centrada
-	for (int i = 0; i < espaciosEnBlancoSubtitulo; i++) {
-	        cout << " ";
-	}
-	
-	cout << subtitulo<< endl;
-	cout << "\n";
-	
-	cout << Regla << endl;
-	cout << "\x1B[1m\t\t1.Nuevo contacto\x1B[0m\n\n\x1B[1m\t\t2.Salir\x1B[0m" << endl;
-	cout << Regla << endl;
-	
-	cout << "\x1B[1m\t Esperando respuesta: \x1B[0m";
-	cin >> x;
-	
-	return x;									/*Convierte y retorna la opci?n seleccionada*/
+
+    // Calcular el número de espacios en blanco necesarios para centrar la palabra
+    int espaciosEnBlancoTitulo = (consoleWidth - titulo.length()) / 2;
+    int espaciosEnBlancoSubtitulo = (consoleWidth - subtitulo.length()) / 2;
+
+    cout << Regla << endl;
+    // Imprimir los espacios en blanco seguidos de la palabra centrada
+    for (int i = 0; i < espaciosEnBlancoTitulo; i++) {
+        cout << " ";
+    }
+    cout << titulo << endl;
+    cout << Regla << endl << endl;
+
+    // Imprimir los espacios en blanco seguidos de la palabra centrada
+    for (int i = 0; i < espaciosEnBlancoSubtitulo; i++) {
+        cout << " ";
+    }
+    cout << subtitulo << endl << endl;
+
+    cout << Regla << endl;
+    cout << "\x1B[1m\t\t1.Nuevo contacto\x1B[0m\n\n\x1B[1m\t\t2.Salir\x1B[0m" << endl;
+    cout << Regla << endl;
+
+    do {
+        cout << "\x1B[1m\t Esperando respuesta: \x1B[0m";
+        cin >> input;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpiar el buffer del cin
+        if (isdigit(input)) {
+            option = input - '0'; // Convertir de char a int
+            if (option < 1 || option > 2) {
+                cout << "\n\x1B[31mError: La opción debe ser 1 o 2.\x1B[0m\n" << endl;
+            }
+        } else {
+            cout << "\n\x1B[31mError: La entrada debe ser numérica.\x1B[0m\n" << endl;
+        }
+    } while (option < 1 || option > 2);
+
+    return option;
 }
+
 
 int MenuSecundario(){
 	int x;
